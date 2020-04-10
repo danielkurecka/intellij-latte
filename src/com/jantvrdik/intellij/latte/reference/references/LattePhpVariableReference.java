@@ -10,6 +10,7 @@ import com.jantvrdik.intellij.latte.utils.LatteUtil;
 import com.jantvrdik.intellij.latte.utils.PsiPositionedElement;
 import com.jetbrains.php.lang.psi.elements.Field;
 import com.jetbrains.php.lang.psi.elements.PhpClass;
+import com.jetbrains.php.lang.psi.elements.PhpNamespace;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
@@ -67,7 +68,7 @@ public class LattePhpVariableReference extends PsiReferenceBase<PsiElement> impl
     @Override
     public PsiElement resolve() {
         ResolveResult[] resolveResults = multiResolve(false);
-        return resolveResults.length > 0 ? resolveResults[0].getElement() : null;
+        return resolveResults.length > 0 ? resolveResults[0].getElement() : null; //todo: here resolve variable only
     }
 
     @NotNull
@@ -88,6 +89,15 @@ public class LattePhpVariableReference extends PsiReferenceBase<PsiElement> impl
             ((LattePhpVariable) getElement()).setName(newName);
         }
         return getElement();
+    }
+
+    @Override
+    public boolean isReferenceTo(@NotNull PsiElement element) {
+        if (!(element instanceof LattePhpVariable)) { //todo: complete this
+            return false;
+        }
+
+        return true;
     }
 
 }

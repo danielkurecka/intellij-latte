@@ -2,6 +2,7 @@ package com.jantvrdik.intellij.latte.utils;
 
 import com.intellij.openapi.project.Project;
 import com.jetbrains.php.lang.psi.elements.PhpClass;
+import com.jetbrains.php.lang.psi.resolve.types.PhpType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class LattePhpType {
 
     private final List<TypePart> types = new ArrayList<TypePart>();
     private final String name;
+    private final PhpType phpType;
     private final boolean nullable;
     private boolean hasClass = false;
 
@@ -29,8 +31,10 @@ public class LattePhpType {
     }
 
     public LattePhpType(String name, String typeString, boolean nullable) {
+        PhpType phpType = new PhpType();
         if (typeString == null || typeString.length() == 0) {
             types.add(new TypePart("mixed"));
+            phpType.add("mixed");
 
         } else {
             String[] parts = typeString.split("\\|");
@@ -40,20 +44,26 @@ public class LattePhpType {
                     continue;
                 }
 
-                String lower = part.toLowerCase();
-                if (lower.equals("null")) {
+                if (part.toLowerCase().equals("null")) {
                     nullable = true;
                     continue;
                 }
 
-                TypePart typePart = new TypePart(part);
-                if (typePart.isClass) {
-                    this.hasClass = true;
+                if (LatteTypesUtil.isNativeTypeHint(part)) {
+                    part = part.toLowerCase();
+                } else {
+                    hasClass = true;
                 }
-                types.add(typePart);
+
+                phpType.add(part);
+            }
+
+            if (nullable) {
+                phpType.add("null");
             }
         }
         this.name = name == null ? null : LattePhpUtil.normalizePhpVariable(name);
+        this.phpType = phpType;
         this.nullable = nullable;
     }
 
@@ -126,13 +136,7 @@ public class LattePhpType {
     }
 
     public String toReadableString() {
-        String out =  types.stream()
-                .map(TypePart::getPart)
-                .collect(Collectors.joining("|"));
-        if (nullable) {
-            out += "|null";
-        }
-        return out;
+        return phpType.toStringResolved();
     }
 
     static class TypePart {

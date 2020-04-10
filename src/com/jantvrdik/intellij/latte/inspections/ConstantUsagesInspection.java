@@ -65,7 +65,7 @@ public class ConstantUsagesInspection extends LocalInspectionTool {
 					}
 
 					if (!isFound) {
-						addProblem(manager, problems, element, "Constant '" + constantName + "' not found", ProblemHighlightType.GENERIC_ERROR, isOnTheFly);
+						addProblem(manager, problems, element, "Constant '" + constantName + "' not found", ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly);
 					}
 
 				} else {

@@ -12,13 +12,13 @@ public class LattePhpTypeTest {
 		assertLattePhpType("int", "Int");
 		assertLattePhpType("callable", "callable");
 		assertLattePhpType("iterable|null", "Iterable|NULL");
-		assertLattePhpType("array|null", "Iterable[]|null");
+		assertLattePhpType("null|Iterable[]", "Iterable[]|NULL");
 		assertLattePhpType("\\Foo\\Bar\\TestClass", "\\Foo\\Bar\\TestClass");
-		assertLattePhpType("\\Foo\\Bar\\TestClass|\\Bar\\TestClass|null", "Foo\\Bar\\TestClass|\\Bar\\TestClass|null");
-		assertLattePhpType("\\Foo\\Bar\\TestClass|\\Bar\\TestClass|null", "Foo\\Bar\\TestClass|Bar\\TestClass|null");
-		assertLattePhpType("\\Foo\\Bar\\TestClass|string|null", "Foo\\Bar\\TestClass|String|null");
-		assertLattePhpType("array|string|null", "Foo\\Bar\\TestClass[][]|String|null");
-		assertLattePhpType("\\Unknown|string|null", "Unknown|String|NULL");
+		assertLattePhpType("\\Bar\\TestClass|null|Foo\\Bar\\TestClass", "Foo\\Bar\\TestClass|\\Bar\\TestClass|null");
+		assertLattePhpType("null|Bar\\TestClass|Foo\\Bar\\TestClass", "Foo\\Bar\\TestClass|Bar\\TestClass|null");
+		assertLattePhpType("null|string|Foo\\Bar\\TestClass", "Foo\\Bar\\TestClass|String|null");
+		assertLattePhpType("null|string|Foo\\Bar\\TestClass[][]", "Foo\\Bar\\TestClass[][]|String|null");
+		assertLattePhpType("null|string|Unknown", "Unknown|String|NULL");
 	}
 
 	@Test

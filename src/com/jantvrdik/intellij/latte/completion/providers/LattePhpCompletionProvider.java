@@ -48,10 +48,10 @@ public class LattePhpCompletionProvider extends BaseLatteCompletionProvider {
 				element instanceof LattePhpStaticVariable
 						|| element instanceof LattePhpConstant
 						|| (element instanceof LattePhpMethod && ((LattePhpMethod) element).isStatic())) {
-			attachPhpCompletions(result, (BaseLattePhpElement) element, true);
+			attachPhpCompletions(result, (BaseLattePhpElement) element, parameters, true);
 
 		} else if (element instanceof LattePhpProperty || (element instanceof LattePhpMethod && !((LattePhpMethod) element).isStatic())) {
-			attachPhpCompletions(result, (BaseLattePhpElement) element, false);
+			attachPhpCompletions(result, (BaseLattePhpElement) element, parameters, false);
 
 		} else if (!(element instanceof LatteMacroModifier) && !(element instanceof LattePhpString)) {
 			classCompletionProvider.addCompletions(parameters, context, result);
@@ -73,7 +73,12 @@ public class LattePhpCompletionProvider extends BaseLatteCompletionProvider {
 		}
 	}
 
-	private void attachPhpCompletions(@NotNull CompletionResultSet result, @NotNull BaseLattePhpElement psiElement, boolean isStatic) {
+	private void attachPhpCompletions(
+			@NotNull CompletionResultSet result,
+			@NotNull BaseLattePhpElement psiElement,
+			@NotNull CompletionParameters parameters,
+			boolean isStatic
+	) {
 		LattePhpType type = psiElement.getPhpType();
 
 		Collection<PhpClass> phpClasses = type.getPhpClasses(psiElement.getProject());
@@ -87,7 +92,7 @@ public class LattePhpCompletionProvider extends BaseLatteCompletionProvider {
 				PhpModifier modifier = method.getModifier();
 				if (modifier.isPublic() && canShowCompletionElement(isStatic, modifier)) {
 					String name = method.getName();
-					if (!isMagicPrefixed && LatteTypesUtil.isExcludedCompletion(name)) {
+					if (!isMagicPrefixed && parameters.getInvocationCount() <= 1 && LatteTypesUtil.isExcludedCompletion(name)) {
 						continue;
 					}
 					PhpLookupElement lookupItem = getPhpLookupElement(method, name);
